@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>无刷新评论</title>
+	<style type="text/css">
+
+    #author,#email{
+    	width: 200px;
+
+    	height: 20px;
+
+    	margin-bottom: 20px;
+    }
+    #submit{
+
+    	background: white;
+
+    	border:1px solid #ccc;
+
+    	width: 80px;
+
+    	height: 30px;
+
+    	margin-top: 20px;
+    }
+
+    .commentlist{
+      
+      border: 1px solid #ccc;
+
+      width: 300px;
+
+      padding: 10px;
+
+      margin: 20px 10px;
+    }
+	</style>
+</head>
+<body>
+	<div id="comments">
+		<!-- 加载评论内容 -->
+
+	</div>
+
+	<h1>发表评论</h1>
+
+	<form>
+		
+		昵称:<input type="text" id="author" required="required"/><br/>
+
+		邮箱:<input type="email" id="email" required="required"/><br/>
+
+		内容:<textarea id="content" cols="30" rows="3" required="required"></textarea><br/>
+
+		<input type="button" id="submit" value="发表评论"/>
+	</form>
+
+	<script src="jquery.min.js"></script>
+	<script type="text/javascript">
+    $(function() {
+    	
+    	$.ajax({
+    		type: "get",
+
+    		url: "comments.php?act=load&id="+Math.random(),
+
+    		beforeSend:function(){
+
+    			$("#comments").text("评论加载中...");
+
+    		},
+            
+            error:function(){
+
+            	$("#comments").text("获取评论信息失败!");
+
+            },
+
+            success:function(data){
+
+            	$("#comments").html(data);
+
+            }
+    	})
+
+    	$("#submit").click(function(data){
+
+    		var author=$("#author").val();
+
+    		var email=$("#email").val();
+
+    		var content=$("#content").val();
+
+    		if (author&&email&&content) {//如果评论内容不为空
+                 
+               $.post("comments.php",{
+
+	    			author:author,
+
+	    			email:email,
+
+	    			content:content,
+
+	    			act:"add"//添加评论
+
+	    		},function(data){
+
+                if (data==1) {//如果发表成功
+                  
+                   $("form").trigger('reset');//模拟重置表单
+
+                   var d=new Date();
+                   
+                   //格式化时间
+                   var time=d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+                   
+                   /*
+                   表单中的信息必然和表单提交到后台存入数据库的信息一样，
+                   因此可直接从前端获取
+                   */
+                   var newcom=
+                   "<div class='commentlist'>"
+                     +author+" 发表于 "+time+"<br/><br/>"
+                     +content+
+                   "</div>";
+
+                   	$("#comments").prepend(newcom);//在前面添加
+
+                   	$(".msg").remove();//当有评论时移除此提示
+
+                };
+    		})
+
+    		}else{
+
+               	alert("请填写评论信息");
+            }    		
+    	})
+    });
+	</script>
+</body>
+</html>

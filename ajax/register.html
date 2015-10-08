@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>注册</title>
+	<style type="text/css">
+    input{
+    	margin-bottom: 20px;
+    }
+	</style>
+	<script src="jquery.min.js"></script>    
+    <script>
+    $(function() {
+    	//判断用户名是否可用
+	    $("#username").blur(function(){
+
+			var username=$("#username").val();
+
+			if (username!="") {
+                //Math.random()防止ie缓存
+                //handle-register.php是后台处理程序
+	    		$.post('register.php',{n:Math.random(),username:username,act:"find-name"}, function(data) {
+	                
+	                $(".msg1").html(data);
+		    	});
+	    	}else{
+
+	    		$(".msg1").html("请填写用户名！");
+	    	}
+		});   		
+
+
+    	//判断密码长度
+    	$("#password").blur(function(){
+
+    	   var password=$("#password").val();
+
+           if (password.length<6) {
+
+           	  $(".msg2").text("密码不能少于6位");
+
+           }else{
+
+           	    $(".msg2").text("密码合法");
+           }	
+    	})
+    	//提交注册信息           
+    	$("#reg").click(function(){
+			  var username=$("#username").val();
+
+			  var password=$("#password").val();
+
+			  if (username!="" && password!="") {
+
+			     $.post("register.php",{n:Math.random(),username:username,password:password,act:"reg"},function(data){
+			     	
+			     	$(".success").html(data);
+			     })
+			  }else{
+
+			  	$(".success").html("请填写注册信息");
+			  }
+		})
+    });
+    </script>
+</head>
+<body>
+	<form>
+		用户名<input type="text" id="username"/><span class="msg1"></span><br/>
+
+		密码<input type="password" id="password" /><span class="msg2"></span><br>
+
+		<!-- type不能是submit，不然还是会刷新提交 -->
+		
+		<input type="button" value="注册" id="reg" />
+
+	</form>
+
+	<p class="success"></p>
+</body>
+</html>

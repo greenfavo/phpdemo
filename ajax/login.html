@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>ajax无刷新登录</title>
+	<script src="jquery.min.js"></script>
+	<script type="text/javascript">
+    $(function() {
+    	$("#login").click(function(){
+
+    		if ($("#username").val()=="") {
+
+    			$(".msg").text("用户名不能为空！");
+
+    			$("#username").focus();
+
+    			return false;
+    		};
+    		if ($("#password").val()=="") {
+
+    			$(".msg").text("密码不能为空！");
+
+    			$("#password").focus();
+
+    			return false;
+    		};
+    		$.ajax({
+
+    			type:"post",
+
+    			url:"login.php",
+
+    			data:{
+
+    				username:$("#username").val(),
+
+    				password:$("#password").val()
+    			},
+    			beforeSend:function(){
+
+    				$(".msg").html("正在登录...");
+    			},
+    			success:function(data){
+
+    				$(".msg").html(data);
+    			}
+    		})
+    	})
+
+    });
+
+    
+	</script>
+</head>
+<body>
+	<h1>用户登录</h1>
+	<form>
+        用户名:<input type="text" id="username"/><br/>
+        密码:<input type="password" id="password"><br/>
+        <input type="button" value="登录" id="login" />
+    </form>
+    <p class="msg"></p>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>根据下拉框的值异步查询数据</title>
+	<script src="http://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>    
+	<script>
+		$(function() {
+
+			$("#key").change(function(event) {
+
+				var cc1=$("#key").val();
+
+				if (cc1!=0) {
+
+					//发送记录id和sid，其中sid用于避免缓存
+					$.get('search.php',{id:cc1,sid:Math.random()}, function(data) {
+
+					   $("#disp").html(data);
+
+					});
+
+				}else{
+
+					$("#disp").html("你还没有选择！");
+				}
+			});
+		});
+	</script>
+</head>
+<body>
+    <?php
+
+      require 'conn.php';
+
+      $result=mysql_query("select * from link Order By id Desc");
+
+    ?>
+	<h2>请选择网站</h2>
+
+	<select id="key">
+
+		<option value="0">请选择</option>
+
+		<?php
+            while ($row=mysql_fetch_assoc($result)) {?>
+
+             <option value="<?php echo $row['id']; ?>"><?php echo $row['name']; ?></option> 
+
+        <?php }?>
+
+	</select>
+
+	<ul id="disp">
+
+		<h2>网站信息...</h2>
+		
+	</ul>
+</body>
+</html>

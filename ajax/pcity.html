@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>省市级联下拉框</title>
+	<script src="http://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>    
+    <script>
+      $(function() {
+
+      	$("#province").change(function(){
+
+      		$.getJSON("pcity.php",{index:$(this).val()},function(data){
+
+      			var city="";
+
+      			for (var i = 0; i < data.length; i++) {
+
+      				city+='<option value="'+data[i].cid+'">'+data[i].cname+'</option>';
+
+      			};
+
+      			$("#city").html(city);//在第二个下拉菜单里显示数据
+      		
+          })
+      	});
+
+      	$("#province").change();//让页面第一次显示的时候也有数据
+      });
+    </script>
+</head>
+<body>
+	所在城市:
+	<select id="province">
+		<?php
+          require 'conn.php';
+
+          $result=mysql_query("select * from province order by porder");
+          
+          while ($row=mysql_fetch_assoc($result)) {?>
+          	
+            <option value="<?php echo $row['pid']; ?>"><?php echo trim($row['pname']); ?></option>
+          
+          <?php }
+		?>
+	</select>
+	<select id="city">
+		
+	</select>
+</body>
+</html>

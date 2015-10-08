@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>自动完成输入框公交路线查询</title>
+	<style type="text/css">
+	input{
+		width: 150px;
+	}
+     #popup{
+     	width: 150px;
+     	position: absolute;
+     	left: 80px;
+     	top: 28px;
+     }
+     /*显示提示框边框*/
+     #popup.show{
+     	border: 1px solid #ccc;
+     }
+     /*清除列表的默认样式*/
+     ul{
+     	list-style: none;
+     	margin: 0;
+     	padding: 0;
+     }
+     li.mouverOver{
+     	background-color: #25caae;
+     	color: #fff;
+     	height: 1em;
+     }
+	</style>
+	
+</head>
+<body>
+	<form>
+	    <!-- 松开按键时开始查询 -->
+		公交路线:<input type="text" id="routes" onkeyup="findroutes();" />
+	</form>
+
+	<div id="popup">
+	    <!-- 放置提示内容 -->
+		<ul id="route_ul"></ul>
+	</div>
+
+	<script src="jquery.min.js"></script>
+
+	<script type="text/javascript">
+
+    function findroutes(){
+      
+      if ($("#routes").val().length>0) {
+
+      	 var route=$("#routes").val();
+
+      	$.get("auto-complete.php",{sBus:route},function(data){
+
+      		var aResult=new Array();
+
+      		if (data.length>0) {//如果查询结果不为空
+
+                aResult=data.split(",");//解析后台传过来的JSON数据
+
+                setroutes(aResult);//调用setroutes函数将每条提示结果放入li标签中
+
+      		}else clearroutes();
+
+      	})
+
+      }else clearroutes();//无输入时清除提示框
+    }
+    
+    //显示提示框，传入参数为所有提示结果组成的数组
+    function setroutes(aResult){
+
+       clearroutes();//每输入一个字母前先清除原有提示再继续
+
+       $("#popup").addClass('show');
+
+       for(var i=0;i<aResult.length;i++){
+
+       	  //将匹配的提示逐一显示给用户
+
+       	  $("#route_ul").append($("<li>"+aResult[i]+"</li>"));
+
+       	  $("#route_ul").find('li').click(function(){//当选中某条提示结果时
+
+       	  	  $("#routes").val($(this).text());//让查询框的值等于提示结果
+
+       	  	  clearroutes();
+
+       	  }).hover(function() {//添加鼠标滑过时的高亮效果
+
+       	  	$(this).addClass('mouverOver');
+
+       	  }, function() {
+
+       	  	$(this).removeClass('mouverOver');
+       	  });
+       }      
+    }
+
+    //清除提示框
+   function clearroutes(){
+
+   	  $("#route_ul").empty();
+
+   	  $("#popup").removeClass('show');
+   }
+	</script>
+</body>
+</html>
